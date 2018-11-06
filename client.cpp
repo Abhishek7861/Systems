@@ -18,7 +18,7 @@
 #define MAX_INPUT_SIZE 5000
 #define MAX_TOKEN_SIZE 1000
 #define MAX_NUM_TOKENS 1000
-#define THREAD 10000
+#define THREAD 1
 
 char **tokenize(char *line)
 {
@@ -67,12 +67,14 @@ void *load(void * threadid){
     
     srand(time(NULL));
     while (1) {
+        //sleep(1);
         char buffer[5000] = {0};
-        char strnum[4];
+        char strnum[6];
         bzero(line, MAX_INPUT_SIZE);
         int index = rand()%5;
-        int key = rand()%10000;
+        int key = rand()%100;
         sprintf(strnum,"%d",key);
+        //puts(strnum);
         strcpy(line,command[index]); 
         tokens = tokenize(line);
         strcpy(choice, tokens[0]);
@@ -93,10 +95,10 @@ void *load(void * threadid){
             case 1:
             	switchvalue=0;
                 if (activeConnection == 0) {
-                    // printf("%s",line);
+                     printf("%s",line);
                     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
                     {
-                        // printf("\n Socket creation error \n");
+                         printf("\n Socket creation error \n");
                         //return -1;
                     }
                     memset(&serv_addr, '0', sizeof(serv_addr));
@@ -106,7 +108,7 @@ void *load(void * threadid){
                     serv_addr.sin_port = htons(port);
                     if(inet_pton(AF_INET, tokens[1], &serv_addr.sin_addr)<=0)
                     {
-                        // printf("\nInvalid address/ Address not supported \n");
+                         printf("\nInvalid address/ Address not supported \n");
                         //return -1;
                     }
                         int a = connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
@@ -115,7 +117,7 @@ void *load(void * threadid){
                         // printf("Connection Failed \n");
                         //return -1;
                     }
-                    // printf("OK fd %d\n",sock);
+                    //printf("OK fd %d\n",sock);
                     activeConnection = 1;
                     break;
                 } else {
@@ -125,17 +127,17 @@ void *load(void * threadid){
             case 2:
             	switchvalue=0;
                 if (activeConnection == 1) {
-                    // printf("%s",line);
+                     printf("%s",line);
                     write(sock,line , strlen(line));
                     valread = read(sock,buffer,5000);
                     close(sock);
-                    // printf("OK\n");
-                    // printf("You can Connect to different server\n");
+                     printf("OK\n");
+                     printf("You can Connect to different server\n");
                     activeConnection=0;
                     break;
                 }
                  else {
-                    // printf("You do not have Any Active Connection\n");
+                     printf("You do not have Any Active Connection\n");
                     break;
                 }
             case 3:
@@ -144,13 +146,13 @@ void *load(void * threadid){
                     strcat(line,strnum);
                     strcat(line,length);
                     strcat(line,value);
-                    // printf("%s",line);
+                     printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                //    printf("%s\n",buffer); 
+                      printf("%s\n",buffer); 
                     break;
                 } else {
-                    // printf("You do not have Any Active Connection\n");
+                     printf("You do not have Any Active Connection\n");
                     break;
                 }
 
@@ -160,13 +162,13 @@ void *load(void * threadid){
                 {
                     strcat(line,strnum);
                     strcat(line,"\n");    
-                    // printf("%s",line);
+                    printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                //    printf("%s\n",buffer);  
+                    printf("%s\n",buffer);  
                     break;
                 } else {
-                    // printf("You do not have Any Active Connection\n");
+                     printf("You do not have Any Active Connection\n");
                     break;
                 }
             case 5:
@@ -175,14 +177,14 @@ void *load(void * threadid){
                     strcat(line,strnum);
                     strcat(line,length);
                     strcat(line,value);
-                    // printf("%s",line);
+                    printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                //    printf("%s\n",buffer);  
+                    printf("%s\n",buffer);  
                                        
                     break;
                 } else {
-                    // printf("You do not have Any Active Connection\n");
+                 printf("You do not have Any Active Connection\n");
                     break;
                 }
             case 6:
@@ -190,17 +192,17 @@ void *load(void * threadid){
                 if (activeConnection == 1) {
                     strcat(line,strnum);
                     strcat(line,"\n");
-                    // printf("%s",line);
+                    printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                //    printf("%s\n",buffer);  
+                    printf("%s\n",buffer);  
                     break;
                 } else {
-                    // printf("You do not have Any Active Connection\n");
+                    printf("You do not have Any Active Connection\n");
                     break;
                 }
             default:
-                // printf("incorrect command\n");
+                 printf("incorrect command\n");
                 break;
         }
    

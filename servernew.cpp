@@ -28,7 +28,7 @@ pthread_cond_t full = PTHREAD_COND_INITIALIZER;
 pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
 
 #define SIZE 1000
-#define jobs 10000
+#define jobs 10
 
 #define MAX_INPUT_SIZE 5000
 #define MAX_TOKEN_SIZE 5000
@@ -90,7 +90,6 @@ void *Worker(void *threadid)
       int entry=0;
     char  line[MAX_INPUT_SIZE];            
       char  **tokens;              
-      char buffer[5000] = {0};
       pthread_mutex_lock(&lock);
       if(!isEmpty()){
           new_socket = deQueue();
@@ -106,11 +105,12 @@ void *Worker(void *threadid)
      pthread_mutex_unlock(&lock);
      while(entry)
      {
+         char buffer[5000] = {0};
      valread = read(new_socket,buffer,5000);
      printf("%s",buffer);
      tokens = tokenize(buffer);
+     //printf("%s\n",tokens[1]);
      int switchvalue=0;
-
       if (strcmp(tokens[0], "disconnect") == 0)
             switchvalue = 2;
         if (strcmp(tokens[0], "create") == 0)
@@ -161,13 +161,13 @@ void *Worker(void *threadid)
             case 4:{
               switchvalue=0;
               int findkey;
-          sscanf(tokens[1],"%d",&findkey);
+              sscanf(tokens[1],"%d",&findkey);
               itr= KVpair.find(findkey);
               if(itr!=KVpair.end())
               {
               int n = itr->second.length();  
-          char char_array[n+1];  
-          strcpy(char_array, itr->second.c_str());
+              char char_array[n+1];  
+              strcpy(char_array, itr->second.c_str());
               write(new_socket , char_array, strlen(char_array));
               }
               else
@@ -224,6 +224,7 @@ void *Worker(void *threadid)
         }
         if(tokens!=NULL)
         free(tokens);
+        buffer[5000] = {0};
     }
 }
 }
