@@ -18,7 +18,7 @@
 #define MAX_INPUT_SIZE 5000
 #define MAX_TOKEN_SIZE 1000
 #define MAX_NUM_TOKENS 1000
-#define THREAD 1
+#define THREAD 10000
 
 char **tokenize(char *line)
 {
@@ -47,7 +47,7 @@ char **tokenize(char *line)
     return tokens;
 }
 
-char command[10][5000] = {"connect 127.0.0.1 8080\n","read ","update ","delete ","create "};
+char command[10][5000] = {"connect 127.0.0.1 8080\n","read ","update ","delete ","create ","disconnect\n"};
 char value[10] = " hello\n";
 char length[10] = " 5";
 
@@ -57,7 +57,6 @@ void *load(void * threadid){
 
     char  line[MAX_INPUT_SIZE];
     char  **tokens;
-    int i;
     int activeConnection=0;
     char choice[1000];
     int switchvalue=0;
@@ -95,7 +94,7 @@ void *load(void * threadid){
             case 1:
             	switchvalue=0;
                 if (activeConnection == 0) {
-                     printf("%s",line);
+                    //  printf("%s",line);
                     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
                     {
                          printf("\n Socket creation error \n");
@@ -127,17 +126,17 @@ void *load(void * threadid){
             case 2:
             	switchvalue=0;
                 if (activeConnection == 1) {
-                     printf("%s",line);
+                    //  printf("%s",line);
                     write(sock,line , strlen(line));
                     valread = read(sock,buffer,5000);
                     close(sock);
-                     printf("OK\n");
-                     printf("You can Connect to different server\n");
+                    //  printf("OK\n");
+                    //  printf("You can Connect to different server\n");
                     activeConnection=0;
                     break;
                 }
                  else {
-                     printf("You do not have Any Active Connection\n");
+                    //  printf("You do not have Any Active Connection\n");
                     break;
                 }
             case 3:
@@ -146,13 +145,13 @@ void *load(void * threadid){
                     strcat(line,strnum);
                     strcat(line,length);
                     strcat(line,value);
-                     printf("%s",line);
+                    //  printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                      printf("%s\n",buffer); 
+                    //   printf("%s\n",buffer); 
                     break;
                 } else {
-                     printf("You do not have Any Active Connection\n");
+                    //  printf("You do not have Any Active Connection\n");
                     break;
                 }
 
@@ -162,13 +161,13 @@ void *load(void * threadid){
                 {
                     strcat(line,strnum);
                     strcat(line,"\n");    
-                    printf("%s",line);
+                    // printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                    printf("%s\n",buffer);  
+                    // printf("%s\n",buffer);  
                     break;
                 } else {
-                     printf("You do not have Any Active Connection\n");
+                    //  printf("You do not have Any Active Connection\n");
                     break;
                 }
             case 5:
@@ -177,14 +176,14 @@ void *load(void * threadid){
                     strcat(line,strnum);
                     strcat(line,length);
                     strcat(line,value);
-                    printf("%s",line);
+                    // printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                    printf("%s\n",buffer);  
+                    // printf("%s\n",buffer);  
                                        
                     break;
                 } else {
-                 printf("You do not have Any Active Connection\n");
+                //  printf("You do not have Any Active Connection\n");
                     break;
                 }
             case 6:
@@ -192,20 +191,27 @@ void *load(void * threadid){
                 if (activeConnection == 1) {
                     strcat(line,strnum);
                     strcat(line,"\n");
-                    printf("%s",line);
+                    // printf("%s",line);
                     write(sock, line , strlen(line));
                     valread = read(sock,buffer,5000);
-                    printf("%s\n",buffer);  
+                    // printf("%s\n",buffer);  
                     break;
                 } else {
-                    printf("You do not have Any Active Connection\n");
+                    // printf("You do not have Any Active Connection\n");
                     break;
                 }
             default:
-                 printf("incorrect command\n");
+                //  printf("incorrect command\n");
                 break;
         }
    
+   int i=0;
+        while(tokens[i]!=NULL){
+        free(tokens[i]);
+        i++;
+        }
+        if(tokens!=NULL)
+        free(tokens);
     }
 }
 
@@ -215,7 +221,8 @@ int main(int argc, char *argv[])
 {
 pthread_t Load[THREAD];
 for(int i=0;i<THREAD;i++){
-    pthread_create(&Load[i], NULL, load, &i);
+    if(pthread_create(&Load[i], NULL, load, &i)<0)
+        printf("not\n");
     pthread_join(Load[i],NULL);
 }     
  }

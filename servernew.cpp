@@ -27,13 +27,13 @@ char **tokenize(char *line);
 pthread_cond_t full = PTHREAD_COND_INITIALIZER;
 pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
 
-#define SIZE 1000
+#define SIZE 10000
 #define jobs 10
 
 #define MAX_INPUT_SIZE 5000
 #define MAX_TOKEN_SIZE 5000
 #define MAX_NUM_TOKENS 5000
-#define THREAD 1500
+#define THREAD 10000
 
 int items[SIZE];
 int front = -1, rear =-1;
@@ -67,13 +67,13 @@ void *generate_requests_loop(void *data)
 
   while(1)
     {   int val;
-        printf("server is listening\n");
+        // printf("server is listening\n");
         val = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
       pthread_mutex_lock(&lock);
       if(!isFull()){
          enQueue(val);
          pthread_cond_signal(&empty);
-         printf("connected %d\n",val);
+        //  printf("connected %d\n",val);
       }
       else{
           pthread_cond_wait(&full,&lock);
@@ -94,7 +94,7 @@ void *Worker(void *threadid)
       if(!isEmpty()){
           new_socket = deQueue();
           if(new_socket>=4){
-          printf("processed request %d\n",new_socket);
+        //   printf("processed request %d\n",new_socket);
           entry=1;
           pthread_cond_signal(&full);    
           }
@@ -107,7 +107,7 @@ void *Worker(void *threadid)
      {
          char buffer[5000] = {0};
      valread = read(new_socket,buffer,5000);
-     printf("%s",buffer);
+    //  printf("%s",buffer);
      tokens = tokenize(buffer);
      //printf("%s\n",tokens[1]);
      int switchvalue=0;
@@ -128,7 +128,7 @@ void *Worker(void *threadid)
               switchvalue=0;
               write(new_socket , "closed at server\n", strlen("closed at server\n"));
               close(new_socket);
-              printf("Connection closed\n");
+            //   printf("Connection closed\n");
               entry=0;
               break;
             }
@@ -148,10 +148,11 @@ void *Worker(void *threadid)
           }
               KVpair.insert(pair <int, string> (key, p));
               write(new_socket , "inserted", strlen("inserted")); 
-              printf("Value inserted\n");}
+            //   printf("Value inserted\n");
+            }
               else
               {
-              printf("exists\n");
+            //   printf("exists\n");
               write(new_socket , "exists", strlen("exists"));
               } 
                 break;
@@ -172,7 +173,7 @@ void *Worker(void *threadid)
               }
               else
               {
-              printf("NOT FOUND\n");
+            //   printf("NOT FOUND\n");
               write(new_socket , "NOT FOUND", strlen("NOT FOUND"));
               }
               break;
@@ -191,10 +192,11 @@ void *Worker(void *threadid)
           }
               KVpair.insert(pair <int, string> (findkey, q));
               write(new_socket , "UPDATED", strlen("UPDATED")); 
-              printf("Value updated\n");}
+            //   printf("Value updated\n");
+            }
               else
               {
-              printf("NOT FOUND\n");
+            //   printf("NOT FOUND\n");
               write(new_socket , "NOT FOUND", strlen("NOT FOUND"));
               } 
                 break;
@@ -207,11 +209,11 @@ void *Worker(void *threadid)
               if(itr!=KVpair.end()){
               KVpair.erase(findkey);
               write(new_socket , "DELETED", strlen("DELETED")); 
-              printf("Value deleted\n");
+            //   printf("Value deleted\n");
         }
         else
         {
-        printf("NOT FOUND\n");
+        // printf("NOT FOUND\n");
         write(new_socket , "NOT FOUND", strlen("NOT FOUND")); 
         }
               break;
@@ -224,7 +226,6 @@ void *Worker(void *threadid)
         }
         if(tokens!=NULL)
         free(tokens);
-        buffer[5000] = {0};
     }
 }
 }
